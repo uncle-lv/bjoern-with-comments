@@ -47,6 +47,7 @@ typedef struct {
   PyObject* iterator;
 } Request;
 
+// 根据地址偏移量，获取request结构体地址
 #define REQUEST_FROM_WATCHER(watcher) \
   (Request*)((size_t)watcher - (size_t)(&(((Request*)NULL)->ev_watcher)));
 
