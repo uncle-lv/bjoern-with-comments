@@ -40,6 +40,7 @@ static const char *http_error_messages[5] = {
 
 static const char *CONTINUE = "HTTP/1.1 100 Continue\r\n\r\n";
 
+// 读写状态
 enum _rw_state
 {
     not_yet_done = 1,
@@ -105,7 +106,7 @@ void server_run(ServerInfo *server_info)
 
     /* This is the program main loop */
     Py_BEGIN_ALLOW_THREADS
-        ev_run(mainloop, 0);
+    ev_run(mainloop, 0);
     ev_loop_destroy(mainloop);
     Py_END_ALLOW_THREADS
 }

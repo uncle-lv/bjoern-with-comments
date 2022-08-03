@@ -40,6 +40,7 @@ size_t unquote_url_inplace(char *url, size_t len)
 void _init_common()
 {
 
+// 以_(REMOTE_ADDR)为例，这个宏定义展开后为： _REMOTE_ADDR = PyUnicode_FromString("REMOTE_ADDR")
 #define _(name) _##name = _PEP3333_String_FromUTF8String(#name)
     _(REMOTE_ADDR);
     _(PATH_INFO);

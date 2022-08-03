@@ -1,5 +1,6 @@
 /**
- * 包装针对文件的操作
+ * 将文件对象转换为可迭代对象的包装器
+ * 详见：https://peps.python.org/pep-3333/#optional-platform-specific-file-handling
  */
 
 #include "filewrapper.h"
