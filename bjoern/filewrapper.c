@@ -8,14 +8,11 @@
 
 #define FW_self ((FileWrapper *)self)
 
-int FileWrapper_GetFd(PyObject *self)
-{
-    return FW_self->fd;
-}
+int FileWrapper_GetFd(PyObject *self) { return FW_self->fd; }
 
-static PyObject *
-FileWrapper_New(PyTypeObject *cls, PyObject *args, PyObject *kwargs)
-{
+// 创建一个FileWrapper对象
+static PyObject *FileWrapper_New(PyTypeObject *cls, PyObject *args,
+                                 PyObject *kwargs) {
     PyObject *file;
     PyObject *blocksize = NULL;
 
@@ -26,12 +23,9 @@ FileWrapper_New(PyTypeObject *cls, PyObject *args, PyObject *kwargs)
     Py_XINCREF(blocksize);
 
     int fd = PyObject_AsFileDescriptor(file);
-    if (fd == -1)
-    {
+    if (fd == -1) {
         PyErr_Clear();
-    }
-    else
-    {
+    } else {
         PyFile_IncUseCount((PyFileObject *)file);
     }
 
@@ -43,46 +37,36 @@ FileWrapper_New(PyTypeObject *cls, PyObject *args, PyObject *kwargs)
     return (PyObject *)wrapper;
 }
 
-static PyObject *
-FileWrapper_Iter(PyObject *self)
-{
+// 返回迭代器
+static PyObject *FileWrapper_Iter(PyObject *self) {
     Py_INCREF(self);
     return self;
 }
 
-static PyObject *
-FileWrapper_IterNext(PyObject *self)
-{
-    PyObject *data = PyObject_CallMethodObjArgs(FW_self->file, _read, FW_self->blocksize, NULL);
-    if (data != NULL && PyObject_IsTrue(data))
-    {
+// 返回迭代器的下一个元素
+static PyObject *FileWrapper_IterNext(PyObject *self) {
+    PyObject *data = PyObject_CallMethodObjArgs(FW_self->file, _read,
+                                                FW_self->blocksize, NULL);
+    if (data != NULL && PyObject_IsTrue(data)) {
         return data;
-    }
-    else
-    {
+    } else {
         return NULL;
     }
 }
 
-void FileWrapper_dealloc(PyObject *self)
-{
+void FileWrapper_dealloc(PyObject *self) {
     Py_DECREF(FW_self->file);
     Py_XDECREF(FW_self->blocksize);
     PyObject_FREE(self);
 }
 
-PyObject *FileWrapper_close(PyObject *self)
-{
-    if (PyObject_HasAttr(FW_self->file, _close))
-    {
+PyObject *FileWrapper_close(PyObject *self) {
+    if (PyObject_HasAttr(FW_self->file, _close)) {
         return PyObject_CallMethodObjArgs(FW_self->file, _close, NULL);
-    }
-    else
-    {
+    } else {
         Py_RETURN_NONE;
     }
-    if (FW_self->fd != -1)
-    {
+    if (FW_self->fd != -1) {
         PyFile_DecUseCount((PyFileObject *)FW_self->file);
     }
 }
@@ -93,14 +77,19 @@ static PyMethodDef FileWrapper_methods[] = {
 };
 
 PyTypeObject FileWrapper_Type = {
-    PyVarObject_HEAD_INIT(NULL, 0) "FileWrapper", /* tp_name (__name__)                     */
-    sizeof(FileWrapper),                          /* tp_basicsize                           */
-    0,                                            /* tp_itemsize                            */
-    (destructor)FileWrapper_dealloc,              /* tp_dealloc                             */
+    PyVarObject_HEAD_INIT(NULL, 0) 
+    "FileWrapper",                         /* tp_name (__name__) */
+    sizeof(FileWrapper),                   /* tp_basicsize */
+    0,                                     /* tp_itemsize */
+    (destructor)FileWrapper_dealloc,       /* tp_dealloc */
 };
 
-void _init_filewrapper(void)
-{
+/**
+ * 初始化FileWrapper类型
+ * 结构体成员的含义详见：
+ * https://docs.python.org/zh-cn/3/c-api/typeobj.html?highlight=tp_new#quick-reference
+ */
+void _init_filewrapper(void) {
     FileWrapper_Type.tp_new = FileWrapper_New;
     FileWrapper_Type.tp_iter = FileWrapper_Iter;
     FileWrapper_Type.tp_iternext = FileWrapper_IterNext;
