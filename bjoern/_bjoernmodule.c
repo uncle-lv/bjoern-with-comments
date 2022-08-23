@@ -114,11 +114,20 @@ run(PyObject *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
+/**
+ * 将C语言方法映射为Python方法
+ * 详见：https://docs.python.org/3/c-api/structures.html#c.PyMethodDef
+ */
 static PyMethodDef Bjoern_FunctionTable[] = {
     {"server_run", (PyCFunction)run, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}};
 
 #if PY_MAJOR_VERSION >= 3
+
+/**
+ * 定义一个Python扩展模块
+ * 详见：https://docs.python.org/3/c-api/module.html?highlight=pymoduledef#c.PyModuleDef
+ */
 static struct PyModuleDef module = {
     PyModuleDef_HEAD_INIT,
     "bjoern",
@@ -139,6 +148,10 @@ static struct PyModuleDef module = {
 #define INIT_BJOERN init_bjoern
 #endif
 
+/**
+ * 模块初始化函数
+ * 详见：https://docs.python.org/zh-cn/3/extending/extending.html#the-module-s-method-table-and-initialization-function
+ */ 
 PyMODINIT_FUNC INIT_BJOERN(void)
 {
     _init_common();
